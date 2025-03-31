@@ -8,7 +8,7 @@ st.write("Com base nos dados fornecidos, este dashboard responde às 7 questões
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv(r"C:\Users\Rask\Documents\Projetos\BCMED_teste\dados_analise_original.csv")
+    df = pd.read_csv("dados_analise_original.csv")
     return df
 
 df = load_data()
