@@ -200,6 +200,7 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     st.pyplot(fig8)
     
     # Gráfico de dispersão Shelf vs Interval
+    st.write("Dados usados para o gráfico Shelf_Life vs. Interval_Order:", df[['Interval_Order', 'Shelf_Life']].dropna().head())
     st.subheader("Shelf_Life vs. Interval_Order")
     df_plot = df[['Interval_Order', 'Shelf_Life']].dropna()
     fig9, ax10 = plt.subplots(figsize=(8,6))
