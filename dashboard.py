@@ -8,21 +8,19 @@ st.write("Com base nos dados fornecidos, este dashboard responde às 7 questões
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("dados_analise_original.csv")
+    df = pd.read_csv(r"C:\Users\Rask\Documents\Projetos\BCMED_teste\dados_analise_original.csv")
     return df
 
 df = load_data()
-
-# Questão 1: Produto com Maior Volume de Vendas (Tabela)
+# Questão 1: Produtos com Sales_Volume = 100 (Tabela)
 with st.expander("Pergunta 1: Produtos com Sales_Volume = 100"):
     st.markdown("""
     **Conclusão:**  
     Foram identificados 15 produtos com Sales_Volume igual a 100, distribuídos entre as categorias, com destaque para Dairy.
-    
+   
     **Insights:**  
     - Verificar se 100 é o teto ou o desempenho máximo real para uma análise mais aprofundada.
     """)
-    # Filtra os produtos com Sales_Volume igual a 100 e exibe em tabela
     df_max = df[df['Sales_Volume'] == 100]
     st.dataframe(df_max[['Product_Name', 'Catagory', 'Sales_Volume']].reset_index(drop=True))
 
@@ -31,16 +29,15 @@ with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     st.markdown("""
     **Conclusão:**  
     Foram identificados 325 produtos com status 'Backordered', com maior incidência na categoria Fruits & Vegetables.
-    
+   
     **Insights:**  
     - Indica falhas na previsão de demanda ou problemas na cadeia de suprimentos.
     """)
-    df_backordered = df[df['Status'].str.lower() == "backordered"]
-    # Conta incidência por categoria
+    df_backordered = df[df['Status'].str.lower().str.contains("backordered", na=False)]
     backorder_counts = df_backordered['Catagory'].value_counts().reset_index()
     backorder_counts.columns = ['Catagory', 'Count']
     backorder_counts = backorder_counts.sort_values(by='Count', ascending=False)
-
+    
     fig_back, ax_back = plt.subplots(figsize=(6,4))
     ax_back.bar(backorder_counts['Catagory'], backorder_counts['Count'], color='orange', edgecolor='black')
     ax_back.set_xlabel("Categoria")
@@ -49,42 +46,36 @@ with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     plt.xticks(rotation=45)
     st.pyplot(fig_back)
 
-
-# Questão 3: Comparação entre Stock_Quantity e Reorder_Level (Grafico com Diferençq)
+# Questão 3: Comparação entre Stock_Quantity e Reorder_Level (Boxplot do Déficit)
 with st.expander("Pergunta 3: Comparação entre Stock_Quantity e Reorder_Level"):
     st.markdown("""
     **Conclusão:**  
     455 produtos possuem Stock_Quantity inferior ao Reorder_Level, principalmente em categorias como Fruits & Vegetables e Grains & Pulses.
-    
+   
     **Insights:**  
     - Necessidade de revisar os parâmetros de reposição e a previsão de demanda.
     """)
     df['Deficit'] = df['Reorder_Level'] - df['Stock_Quantity']
-    st.write("Estatísticas do déficit (Reorder_Level - Stock_Quantity):")
-    st.write(df['Deficit'].describe())
-    
-    # Plotar um boxplot do déficit por categoria para visualizar a distribuição
     categorias = df['Catagory'].unique()
     data_box = [df[df['Catagory'] == cat]['Deficit'].dropna() for cat in categorias]
     
     fig_box, ax_box = plt.subplots(figsize=(8,6))
     ax_box.boxplot(data_box, labels=categorias, showfliers=True)
     ax_box.set_xlabel("Categoria")
-    ax_box.set_ylabel("Deficit (Reorder_Level - Stock_Quantity)")
+    ax_box.set_ylabel("Déficit (Reorder_Level - Stock_Quantity)")
     ax_box.set_title("Distribuição do Déficit por Categoria")
     plt.xticks(rotation=45)
     st.pyplot(fig_box)
 
-# Questão 4: Análise Expiration_Date
+# Questão 4: Análise das Datas de Validad
 with st.expander("Pergunta 4: Análise das Datas de Validade"):
     st.markdown("""
     **Conclusão:**  
     Os registros indicam que todos os produtos estão vencidos, o que pode acarretar sérios impactos operacionais e financeiros. Isso evidencia problemas no cadastro das datas ou na política de reposição, comprometendo a qualidade dos produtos e a satisfação dos clientes.
-    
+   
     **Insights:**  
     - Revisar o cadastro de datas e ajustar estratégias para evitar vencimentos.
     """)
-    # Converter datas e calcular Shelf
     df['Expiration_Date'] = pd.to_datetime(df['Expiration_Date'], format="%m/%d/%Y", errors='coerce')
     df['Date_Received'] = pd.to_datetime(df['Date_Received'], format="%m/%d/%Y", errors='coerce')
     df['Shelf_Life'] = (df['Expiration_Date'] - df['Date_Received']).dt.days
@@ -95,7 +86,7 @@ with st.expander("Pergunta 4: Análise das Datas de Validade"):
     ax_exp.set_title("Distribuição do Shelf_Life")
     st.pyplot(fig_exp)
 
-# Questão 5: Análise do Invent e Demanda
+# Questão 5: Análise do Inventory_Turnover_Rate e Demanda
 with st.expander("Pergunta 5: Análise do Inventory_Turnover_Rate e Demanda"):
     st.markdown("""
     **Conclusão:**  
@@ -103,7 +94,6 @@ with st.expander("Pergunta 5: Análise do Inventory_Turnover_Rate e Demanda"):
     **Insights:**  
     -  Segmentos como Dairy e Seafood tendem a apresentar uma demanda ligeiramente superior, indicando que a categoria exerce alguma influência.
     """)
-    # Gráfico de barras da média do Invent por categoria
     df['Inventory_Turnover_Rate'] = pd.to_numeric(df['Inventory_Turnover_Rate'], errors='coerce')
     media_turnover = df.groupby("Catagory")["Inventory_Turnover_Rate"].mean().reset_index()
     fig_turnover, ax_turnover = plt.subplots(figsize=(6,4))
@@ -119,7 +109,7 @@ with st.expander("Pergunta 6: Relação entre Unit_Price, Sales_Volume e Invento
     st.markdown("""
     **Conclusão:**  
     A análise revelou que a correlação entre Unit_Price e os indicadores Sales_Volume e Inventory_Turnover_Rate é praticamente nula, indicando que o preço unitário isoladamente não explica o desempenho dos produtos.
-    
+   
     **Insights:**  
     - Outros fatores (qualidade, promoção, sazonalidade) devem ser considerados.
     """)
@@ -133,7 +123,6 @@ with st.expander("Pergunta 6: Relação entre Unit_Price, Sales_Volume e Invento
     st.write(f"**Correlação entre Unit_Price e Sales_Volume:** {corr_sales:.5f}")
     st.write(f"**Correlação entre Unit_Price e Inventory_Turnover_Rate:** {corr_turnover:.5f}")
     
-    # Gráficos de dispersão
     fig6, ax6 = plt.subplots(figsize=(6,4))
     ax6.scatter(df_corr['Unit_Price'], df_corr['Sales_Volume'], alpha=0.7, color='blue')
     ax6.set_xlabel("Unit_Price")
@@ -147,21 +136,6 @@ with st.expander("Pergunta 6: Relação entre Unit_Price, Sales_Volume e Invento
     ax7.set_ylabel("Inventory_Turnover_Rate")
     ax7.set_title("Unit_Price vs Inventory_Turnover_Rate")
     st.pyplot(fig7)
-    
-    st.subheader("Correlação Segmentada por Categoria")
-    resultados = []
-    for cat in df_corr['Catagory'].unique():
-        subset = df_corr[df_corr['Catagory'] == cat]
-        corr_sales_cat = subset['Unit_Price'].corr(subset['Sales_Volume'])
-        corr_turnover_cat = subset['Unit_Price'].corr(subset['Inventory_Turnover_Rate'])
-        resultados.append({
-            'Catagory': cat,
-            'Corr_UnitPrice_SalesVolume': corr_sales_cat,
-            'Corr_UnitPrice_TurnoverRate': corr_turnover_cat,
-            'Count': subset.shape[0]
-        })
-    df_resultados = pd.DataFrame(resultados)
-    st.dataframe(df_resultados)
 
 # Questão 7: Análise dos Padrões de Datas
 with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
@@ -171,22 +145,13 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     **Insights:**  
     - É necessário revisar e corrigir os registros de datas para garantir que os ciclos de reposição estejam de acordo com os prazos de validade.
     """)
-    # Converte as datas
     df['Date_Received'] = pd.to_datetime(df['Date_Received'], format="%m/%d/%Y", errors='coerce')
     df['Last_Order_Date'] = pd.to_datetime(df['Last_Order_Date'], format="%m/%d/%Y", errors='coerce')
     df['Expiration_Date'] = pd.to_datetime(df['Expiration_Date'], format="%m/%d/%Y", errors='coerce')
     
-    # Calcula Interval_Order e Shelf_Life
     df['Interval_Order'] = (df['Last_Order_Date'] - df['Date_Received']).dt.days
     df['Shelf_Life'] = (df['Expiration_Date'] - df['Date_Received']).dt.days
     
-    st.subheader("Estatísticas Temporais")
-    st.write("**Interval_Order:**")
-    st.write(df['Interval_Order'].describe())
-    st.write("**Shelf_Life:**")
-    st.write(df['Shelf_Life'].describe())
-    
-    # Histogramas dos intervalos
     fig8, (ax8, ax9) = plt.subplots(1, 2, figsize=(12,4))
     ax8.hist(df['Interval_Order'].dropna(), bins=30, edgecolor='black', color='skyblue')
     ax8.set_xlabel("Interval_Order (dias)")
@@ -198,8 +163,6 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     ax9.set_title("Distribuição do Shelf_Life")
     st.pyplot(fig8)
     
-    # Gráfico de dispersão Shelf vs Interval
-    st.write("Dados usados para o gráfico Shelf_Life vs. Interval_Order:", df[['Interval_Order', 'Shelf_Life']].dropna().head())
     st.subheader("Shelf_Life vs. Interval_Order")
     df_plot = df[['Interval_Order', 'Shelf_Life']].dropna()
     fig9, ax10 = plt.subplots(figsize=(8,6))
@@ -212,22 +175,8 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     ax10.plot([min_val, max_val], [min_val, max_val], 'r--', label='Linha de Equilíbrio')
     ax10.legend()
     st.pyplot(fig9)
-    
-    # Shelf por Categoria
-    st.subheader("Shelf_Ratio por Categoria")
-    df['Interval_Order'] = df['Interval_Order'].replace(0, np.nan)
-    df['Shelf_Ratio'] = df['Shelf_Life'] / df['Interval_Order']
-    media_por_categoria_ratio = df.groupby('Catagory')['Shelf_Ratio'].mean().reset_index()
-    st.dataframe(media_por_categoria_ratio)
-    fig10, ax11 = plt.subplots(figsize=(10,6))
-    ax11.bar(media_por_categoria_ratio['Catagory'], media_por_categoria_ratio['Shelf_Ratio'], color='coral', edgecolor='black')
-    ax11.set_xlabel("Categoria")
-    ax11.set_ylabel("Média do Shelf_Ratio")
-    ax11.set_title("Média do Shelf_Ratio por Categoria")
-    ax11.tick_params(axis='x', rotation=45)
-    st.pyplot(fig10)
 
-    st.header("Detalhamento dos Dados")
+# Seção Final: Detalhamento dos Dados (Exibido lado a lado)
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("Estatísticas Descritivas")
