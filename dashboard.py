@@ -40,8 +40,8 @@ with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     # Contar incidência por categoria
     backorder_counts = df_backordered['Catagory'].value_counts().reset_index()
     backorder_counts.columns = ['Catagory', 'Count']
-    # Ordenar para mostrar as maiores incidências
     backorder_counts = backorder_counts.sort_values(by='Count', ascending=False)
+
     fig_back, ax_back = plt.subplots(figsize=(6,4))
     ax_back.bar(backorder_counts['Catagory'], backorder_counts['Count'], color='orange', edgecolor='black')
     ax_back.set_xlabel("Categoria")
@@ -49,6 +49,7 @@ with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     ax_back.set_title("Incidência de Backordered por Categoria")
     plt.xticks(rotation=45)
     st.pyplot(fig_back)
+
 
 # Questão 3: Comparação entre Stock_Quantity e Reorder_Level (Gráfico com Diferença)
 with st.expander("Pergunta 3: Comparação entre Stock_Quantity e Reorder_Level"):
