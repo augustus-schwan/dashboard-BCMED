@@ -27,6 +27,7 @@ with st.expander("Pergunta 1: Produtos com Sales_Volume = 100"):
     st.dataframe(df_max[['Product_Name', 'Catagory', 'Sales_Volume']].reset_index(drop=True))
 
 # Questão 2: Produtos com Status "Backordered" (Gráfico de Incidência por Categoria)
+st.write("Valores únicos em 'Status':", df['Status'].unique())
 with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     st.markdown("""
     **Conclusão:**  
