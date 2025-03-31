@@ -26,7 +26,7 @@ with st.expander("Pergunta 1: Produtos com Sales_Volume = 100"):
     df_max = df[df['Sales_Volume'] == 100]
     st.dataframe(df_max[['Product_Name', 'Catagory', 'Sales_Volume']].reset_index(drop=True))
 
-# Questão 2: Produtos com Status "Backordered" (Gráfico de Incidência por Categoria)
+# Questão 2: Produtos com Status "Backordered"
 with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     st.markdown("""
     **Conclusão:**  
@@ -36,7 +36,7 @@ with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     - Indica falhas na previsão de demanda ou problemas na cadeia de suprimentos.
     """)
     df_backordered = df[df['Status'].str.lower() == "backordered"]
-    # Contar incidência por categoria
+    # Conta incidência por categoria
     backorder_counts = df_backordered['Catagory'].value_counts().reset_index()
     backorder_counts.columns = ['Catagory', 'Count']
     backorder_counts = backorder_counts.sort_values(by='Count', ascending=False)
@@ -50,7 +50,7 @@ with st.expander("Pergunta 2: Produtos com Status 'Backordered'"):
     st.pyplot(fig_back)
 
 
-# Questão 3: Comparação entre Stock_Quantity e Reorder_Level (Gráfico com Diferença)
+# Questão 3: Comparação entre Stock_Quantity e Reorder_Level (Grafico com Diferençq)
 with st.expander("Pergunta 3: Comparação entre Stock_Quantity e Reorder_Level"):
     st.markdown("""
     **Conclusão:**  
@@ -59,8 +59,6 @@ with st.expander("Pergunta 3: Comparação entre Stock_Quantity e Reorder_Level"
     **Insights:**  
     - Necessidade de revisar os parâmetros de reposição e a previsão de demanda.
     """)
-    # Calcular a diferença entre Reorder_Level e Stock_Quantity: 
-    # Valores positivos indicam déficit
     df['Deficit'] = df['Reorder_Level'] - df['Stock_Quantity']
     st.write("Estatísticas do déficit (Reorder_Level - Stock_Quantity):")
     st.write(df['Deficit'].describe())
@@ -178,7 +176,7 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     df['Last_Order_Date'] = pd.to_datetime(df['Last_Order_Date'], format="%m/%d/%Y", errors='coerce')
     df['Expiration_Date'] = pd.to_datetime(df['Expiration_Date'], format="%m/%d/%Y", errors='coerce')
     
-    # Calcular Interval_Order e Shelf_Life
+    # Calcula Interval_Order e Shelf_Life
     df['Interval_Order'] = (df['Last_Order_Date'] - df['Date_Received']).dt.days
     df['Shelf_Life'] = (df['Expiration_Date'] - df['Date_Received']).dt.days
     
