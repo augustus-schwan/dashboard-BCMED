@@ -176,11 +176,5 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     ax10.legend()
     st.pyplot(fig9)
 
-# Seção Final: Detalhamento dos Dados (Exibido lado a lado)
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Estatísticas Descritivas")
-    st.write(df.describe())
-with col2:
-    st.subheader("Colunas Disponíveis")
-    st.write(df.columns)
+st.markdown("<h3 style='text-align: center;'>Estatísticas Descritivas</h3>", unsafe_allow_html=True)
+st.write(df.describe())
