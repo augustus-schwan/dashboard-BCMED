@@ -13,7 +13,7 @@ def load_data():
 
 df = load_data()
 # Questão 1: Produtos com Sales_Volume = 100 (Tabela)
-with st.expander("Pergunta 1: Produtos com Sales_Volume = 100"):
+with st.expander("Pergunta 1: Produto com maior volume de vendas"):
     st.markdown("""
     **Conclusão:**  
     Foram identificados 15 produtos com Sales_Volume igual a 100, distribuídos entre as categorias, com destaque para Dairy.
@@ -74,7 +74,7 @@ with st.expander("Pergunta 4: Análise das Datas de Validade"):
     Os registros indicam que todos os produtos estão vencidos, o que pode acarretar sérios impactos operacionais e financeiros. Isso evidencia problemas no cadastro das datas ou na política de reposição, comprometendo a qualidade dos produtos e a satisfação dos clientes.
    
     **Insights:**  
-    - Revisar o cadastro de datas e ajustar estratégias para evitar vencimentos.
+    - Parece que os dados estão invertidos. Para uma análise aprofundada, eu precisaria revisar o cadastro de datas e se confirmado que estão corretas, ajustar estratégias para evitar vencimentos.
     """)
     df['Expiration_Date'] = pd.to_datetime(df['Expiration_Date'], format="%m/%d/%Y", errors='coerce')
     df['Date_Received'] = pd.to_datetime(df['Date_Received'], format="%m/%d/%Y", errors='coerce')
