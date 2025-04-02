@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-st.title("Dashboard BCMED por Raphael Schwanke")
+st.title("Dashboard Raphael Schwanke")
 st.write("Com base nos dados fornecidos, este dashboard responde às 7 questões propostas.")
 
 @st.cache_data
