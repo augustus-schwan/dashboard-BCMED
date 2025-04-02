@@ -175,6 +175,3 @@ with st.expander("Pergunta 7: Análise dos Padrões de Datas"):
     ax10.plot([min_val, max_val], [min_val, max_val], 'r--', label='Linha de Equilíbrio')
     ax10.legend()
     st.pyplot(fig9)
-
-st.markdown("<h3 style='text-align: center;'>Estatísticas Descritivas</h3>", unsafe_allow_html=True)
-st.write(df.describe())
